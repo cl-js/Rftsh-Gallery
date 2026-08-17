@@ -100,15 +100,10 @@ image-hover-zoom{
   transition: transform .5s ease;
 }
 
-.img-hover-zoom:hover img{
-  transform: scale(1.5);
-
-}
-
-@media (max-width:800px){
-  .img-hover-zoom:hover img{
-  transform: scale(1);
-
+@media (hover: hover) and (pointer: fine) {
+  .img-hover-zoom:hover img {
+    transform: scale(1.5);
+  }
 }
 
 @media screen and (max-width: 800px){
