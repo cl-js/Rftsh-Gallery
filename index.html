@@ -11,7 +11,7 @@
 
     <nav>
     <ul class="sidebar">
-      <li onclick="hideSidebar()"><a href="#"><img src="assets/images/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg" /></a></li>
+      <li><a class="sidebar-close" href="#" onclick="hideSidebar(); return false;"><img src="assets/images/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg" alt="Close menu" /></a></li>
       <li><a href="#" onclick="showSection('home-section')">Home</a></li>
       <li><a href="#" onclick="showSection('graduation-section')">Graduation</a></li>
       <li><a href="#" onclick="showSection('birthday-section')">Birthday</a></li>
@@ -34,6 +34,15 @@
 
   <!-- HOME SECTION -->
   <div id="home-section" class="row gallery-section">
+    <section class="ui-showcase" aria-label="UI motion previews">
+      <video class="ui-video" autoplay loop muted playsinline preload="auto">
+        <source src="assets/UI/animo-spread-rows-720p.mp4" type="video/mp4">
+      </video>
+      <video class="ui-video" autoplay loop muted playsinline preload="auto">
+        <source src="assets/UI/animo-depth-stack-scroll-720p.mp4" type="video/mp4">
+      </video>
+    </section>
+
     <div class="column">
       <div class="img-hover-zoom"><img src="assets/images/ruftsh1.jpg" style="width:100%" alt="Image 1"></div>
       <div class="img-hover-zoom"><img src="assets/images/ruftsh2.jpg" style="width:100%" alt="Image 1"></div>
@@ -174,15 +183,94 @@
     </div>
   </div>
 
+  <div class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" type="button" aria-label="Close image viewer">&times;</button>
+    <button class="lightbox-prev" type="button" aria-label="Previous image">&#10094;</button>
+    <img class="lightbox-image" alt="">
+    <button class="lightbox-next" type="button" aria-label="Next image">&#10095;</button>
+  </div>
+
   <script>
+    const lightbox = document.querySelector('.lightbox');
+    const lightboxImage = document.querySelector('.lightbox-image');
+    const closeButton = document.querySelector('.lightbox-close');
+    const previousButton = document.querySelector('.lightbox-prev');
+    const nextButton = document.querySelector('.lightbox-next');
+    let lightboxImages = [];
+    let lightboxIndex = 0;
+
+    function getVisibleGalleryImages() {
+      return [...document.querySelectorAll('.gallery-section img')]
+        .filter(image => image.getClientRects().length > 0);
+    }
+
+    function updateLightboxImage() {
+      const image = lightboxImages[lightboxIndex];
+      if (!image) return;
+
+      lightboxImage.src = image.src;
+      lightboxImage.alt = image.alt;
+      previousButton.disabled = lightboxIndex === 0;
+      nextButton.disabled = lightboxIndex === lightboxImages.length - 1;
+    }
+
+    function openLightbox(image) {
+      lightboxImages = getVisibleGalleryImages();
+      lightboxIndex = lightboxImages.indexOf(image);
+      updateLightboxImage();
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('lightbox-open');
+    }
+
+    function showPreviousImage() {
+      if (lightboxIndex > 0) {
+        lightboxIndex -= 1;
+        updateLightboxImage();
+      }
+    }
+
+    function showNextImage() {
+      if (lightboxIndex < lightboxImages.length - 1) {
+        lightboxIndex += 1;
+        updateLightboxImage();
+      }
+    }
+
+    document.addEventListener('click', event => {
+      const image = event.target.closest('.gallery-section img');
+      if (image) openLightbox(image);
+    });
+
+    lightbox.addEventListener('click', event => {
+      if (event.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', event => {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (event.key === 'ArrowLeft') showPreviousImage();
+      if (event.key === 'ArrowRight') showNextImage();
+      if (event.key === 'Escape') closeLightbox();
+    });
+
+    closeButton.addEventListener('click', closeLightbox);
+    previousButton.addEventListener('click', showPreviousImage);
+    nextButton.addEventListener('click', showNextImage);
+
     function showSidebar() {
       const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = 'flex';
+      sidebar.classList.add('is-open');
     }
 
     function hideSidebar() {
       const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = 'none';
+      sidebar.classList.remove('is-open');
     }
 
     function showSection(sectionId) {
