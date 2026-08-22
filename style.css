@@ -132,8 +132,8 @@ div h1{
 @media (max-width:800px){
   .img-hover-zoom:hover img{
   transform: scale(1);
-  }
 
+}
 }
 
 @media screen and (max-width: 800px){
